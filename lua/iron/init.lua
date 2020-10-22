@@ -82,7 +82,7 @@ iron.ll.get_preferred_repl = function(ft)
     repl_def = repl_definitions[preference]
   elseif repl_definitions ~= nil then
     for _, v in pairs(repl_definitions) do
-      if vim.fn.executable(v.command[1]) == 1 then
+      if vim.api.nvim_call_function("executable", {v.command[1]}) == 1 then
         repl_def = v
         break
       end
@@ -121,7 +121,7 @@ iron.ll.create_new_repl = function(ft, repl, new_win)
   end
 
   vim.api.nvim_set_current_win(winid)
-  local job_id = vim.fn.termopen(repl.command)
+  local job_id = vim.api.nvim_call_function("termopen", {repl.command})
 
   local inst = {
     bufnr = bufnr,
@@ -152,7 +152,7 @@ iron.ll.ensure_repl_exists = function(ft)
   local mem = iron.ll.get(ft)
   local created = false
 
-  if mem == nil or vim.fn.bufname(mem.bufnr) == "" then
+  if mem == nil or vim.api.nvim_call_function("bufname", {mem.bufnr}) == "" then
     mem = iron.ll.create_preferred_repl(ft)
     created = true
   end
@@ -170,7 +170,7 @@ iron.ll.send_to_repl = function(ft, data)
   local mem = iron.ll.get(ft)
   dt = ext.repl.format(mem.repldef, dt)
 
-  local window = vim.fn.win_getid(vim.fn.bufwinnr(mem.bufnr))
+  local window = vim.api.nvim_call_function("win_getid", {vim.api.nvim_call_function("bufwinnr", {mem.bufnr})})
   vim.api.nvim_win_set_cursor(window, {vim.api.nvim_buf_line_count(mem.bufnr), 0})
 
   local indent = ""
@@ -204,7 +204,7 @@ end
 iron.core.repl_here = function(ft)
   -- first check if the repl for the current filetype already exists
   local mem = iron.ll.get(ft)
-  local exists = not (mem == nil or vim.fn.bufname(mem.bufnr) == "")
+  local exists = not (mem == nil or vim.api.nvim_call_function("bufname", {mem.bufnr}) == "")
 
   if exists then
     vim.api.nvim_set_current_buf(mem.bufnr)
@@ -222,7 +222,7 @@ iron.core.repl_restart = function()
   -- Then, start a new REPL of the same type and enter it into the window
   -- Afterwards, wipe out the old REPL buffer
   -- This is done without asking for confirmation, so user beware
-  local bufnr_here = vim.fn.bufnr("%")
+  local bufnr_here = vim.api.nvim_call_function("bufnr", {"%"})
   local ft_here = iron.ll.get_repl_ft_for_bufnr(bufnr_here)
   local mem = nil
 
@@ -235,7 +235,7 @@ iron.core.repl_restart = function()
 
     local mem = iron.ll.get(ft)
     local exists = not (mem == nil or
-                        vim.fn.bufname(mem.bufnr) == "")
+                        vim.api.nvim_call_function("bufname", {mem.bufnr}) == "")
 
     if exists then
       -- Wipe the old REPL and then create a new one
@@ -320,7 +320,7 @@ iron.core.send_line = function()
 
     local linenr = vim.api.nvim_win_get_cursor(0)[1]
     local cur_line = vim.api.nvim_buf_get_lines(0, linenr-1, linenr, 0)[1]
-    local width = vim.fn.strwidth(cur_line)
+    local width = vim.api.nvim_call_function("strwidth", {cur_line})
 
     vim.api.nvim_buf_set_extmark(0, iron.namespace, iron.mark.begin_last, linenr, 0, {})
     vim.api.nvim_buf_set_extmark(0, iron.namespace, iron.mark.end_last, linenr, width - 1, {})
@@ -349,13 +349,13 @@ iron.core.send_chunk = function(mode, mtype)
 
 
 
-  local b_line, b_col = unpack(vim.fn.getpos(bstart),2,3)
-  local e_line, e_col = unpack(vim.fn.getpos(bend),2,3)
+  local b_line, b_col = unpack(vim.api.nvim_call_function("getpos", {bstart}),2,3)
+  local e_line, e_col = unpack(vim.api.nvim_call_function("getpos", {bend}),2,3)
 
   local lines = vim.api.nvim_buf_get_lines(0, b_line - 1, e_line, 0)
 
-  local b_line_len = vim.fn.strwidth(lines[1])
-  local e_line_len = vim.fn.strwidth(lines[#lines])
+  local b_line_len = vim.api.nvim_call_function("strwidth", {lines[1]})
+  local e_line_len = vim.api.nvim_call_function("strwidth", {lines[#lines]})
 
   b_col,e_col = unpack(mtype=='line' and { 0,e_line_len} or { b_col,e_col })
 
@@ -378,7 +378,7 @@ iron.core.send_chunk = function(mode, mtype)
 
   if #mark ~= 0 then
     -- winrestview is 1-based
-    vim.fn.winrestview({lnum = mark[1] + 1, col = mark[2] + 1})
+    vim.api.nvim_call_function("winrestview", {{lnum = mark[1] + 1, col = mark[2] + 1}})
     vim.api.nvim_buf_del_extmark(0, iron.namespace, 20)
   end
 

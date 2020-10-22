@@ -20,15 +20,15 @@ view.openwin = function(nvim_cmd, buff)
   vim.api.nvim_command(nvim_cmd)
   vim.api.nvim_set_current_buf(buff)
 
-  local winid = vim.fn.win_getid(vim.fn.bufwinnr(buff))
+  local winid = vim.api.nvim_call_function("win_getid", {vim.api.nvim_call_function("bufwinnr", {buff})})
   vim.api.nvim_win_set_option(winid, "winfixwidth", true)
   return winid
 end
 
 
 view.top = function(size, buff)
-  local width = vim.o.columns
-  local height = vim.o.lines
+  local width = vim.api.nvim_get_option("columns")
+  local height = vim.api.nvim_get_option("lines")
 
   return view.openfoat({
     relative = "editor",
@@ -40,8 +40,8 @@ view.top = function(size, buff)
 end
 
 view.bottom = function(size, buff)
-  local width = vim.o.columns
-  local height = vim.o.lines
+  local width = vim.api.nvim_get_option("columns")
+  local height = vim.api.nvim_get_option("lines")
 
   return view.openfloat({
     relative = "editor",
@@ -53,8 +53,8 @@ view.bottom = function(size, buff)
 end
 
 view.right = function(size, buff)
-  local width = vim.o.columns
-  local height = vim.o.lines
+  local width = vim.api.nvim_get_option("columns")
+  local height = vim.api.nvim_get_option("lines")
 
   return view.openfloat({
     relative = "editor",
@@ -66,7 +66,7 @@ view.right = function(size, buff)
 end
 
 view.left = function(size, buff)
-  local height = vim.o.lines
+  local height = vim.api.nvim_get_option("lines")
 
   return view.openfloat({
     relative = "editor",
@@ -78,8 +78,8 @@ view.left = function(size, buff)
 end
 
 view.center = function(size, buff)
-  local width = vim.o.columns
-  local height = vim.o.lines
+  local width = vim.api.nvim_get_option("columns")
+  local height = vim.api.nvim_get_option("lines")
 
   return view.openfloat({
     relative = "editor",

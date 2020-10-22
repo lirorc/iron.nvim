@@ -2,11 +2,11 @@ local visibility = {}
 
 local hidden = function(bufid, showfn)
   local was_hidden = false
-  local window = vim.fn.bufwinnr(bufid)
+  local window = vim.api.nvim_call_function("bufwinnr", {bufid})
 
   if window == -1 then
     was_hidden = true
-    window = vim.fn.win_id2win(showfn())
+    window = vim.api.nvim_call_function("win_id2win", {showfn()})
   end
 
   return window, was_hidden
