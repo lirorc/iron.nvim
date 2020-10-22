@@ -207,7 +207,12 @@ iron.core.repl_here = function(ft)
   local exists = not (mem == nil or vim.api.nvim_call_function("bufname", {mem.bufnr}) == "")
 
   if exists then
-    vim.api.nvim_set_current_buf(mem.bufnr)
+    if vim.api.nvim_set_current_buf ~= nil then
+      vim.api.nvim_set_current_buf(mem.bufnr)
+    else
+      -- Fallback if set_current_buf doesn't exist
+      vim.api.nvim_command("buffer " .. mem.bufnr)
+    end
   else
     -- the repl does not exist, so we have to create a new one,
     -- but in the current window
