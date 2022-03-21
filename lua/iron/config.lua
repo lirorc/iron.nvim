@@ -3,7 +3,7 @@ local view = require("iron.view")
 
 --- Default values
 --@module config
-local config 
+local config
 
 --- Default configurations for iron.nvim
 -- @table config.values
@@ -43,7 +43,7 @@ local values = {
     end
   }),
   should_map_plug = true,
-  repl_open_cmd = 'topleft vertical 100 split',
+  repl_open_cmd = view.curry.bottom(40),
   namespace = namespace,
   mark = { -- Arbitrary numbers
     save_pos = 20,
